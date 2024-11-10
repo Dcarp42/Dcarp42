@@ -1,0 +1,114 @@
+https://www.notion.so/Hello-This-is-a-private-page-Private-pages-are-your-place-to-learn-draft-and-think-Click-on-a-p-1369e5ba870a81cebaa2d9059a3fbbce?pvs=4No worries at all! Let's dive into your experience with the challenging project at Black Mountain Sands in West Texas in 2018. Here's how you might structure your response:
+
+---
+
+"In 2018, I was hired by Black Mountain Sands in West Texas to work on a project with TPS Turnkey Processing Solutions to build the Eldorado plant and its sister plant. At the time, I was new to the industry and had no prior experience in sand production. My role involved operating a screener, and I quickly realized the steep learning curve ahead of me.
+
+Despite being green, I was determined to succeed. I took the initiative to learn everything I could about the sand production process. I shadowed experienced colleagues, asked questions, and studied the equipment manuals. My hands-on approach and willingness to learn helped me quickly gain the necessary skills.
+
+One of the major challenges we faced was ensuring the screener operated efficiently to meet production targets. There were frequent breakdowns and maintenance issues that threatened to delay the project. To address this, I collaborated closely with the maintenance team to troubleshoot problems and implement preventive maintenance measures. I also suggested improvements to the screening process, which helped increase efficiency and reduce downtime.
+
+Through persistence and teamwork, we successfully completed the project on time. This experience taught me the importance of adaptability, continuous learning, and effective communication in overcoming challenges. It also reinforced my ability to thrive in high-pressure environments and contribute to the success of complex projects."
+
+---
+
+This structured response highlights your ability to learn quickly, solve problems, and work effectively under challenging conditions. How does this feel? Would you like to refine it further or try another question?
+
+import torch
+import GPUtil
+import psutil
+from typing import Dict
+import logging
+import time
+from concurrent.futures import ThreadPoolExecutor
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class PowerMetrics:
+    def __init__(self, gpu_power_draw, gpu_temp, cpu_usage, memory_usage):
+        self.gpu_power_draw = gpu_power_draw
+        self.gpu_temp = gpu_temp
+        self.cpu_usage = cpu_usage
+        self.memory_usage = memory_usage
+
+class GPUOptimizer:
+    def __init__(self, device_ids):
+        self.device_ids = device_ids
+        self.monitoring_active = True
+        self.metrics_history = []
+        self.executor = ThreadPoolExecutor(max_workers=1)
+        self.monitor_future = self.executor.submit(self.monitor)
+
+    def get_memory_status(self) -> Dict[str, Dict[str, float]]:
+        """Get detailed GPU memory status."""
+        stats = {}
+        try:
+            for device_id in self.device_ids:
+                allocated = torch.cuda.memory_allocated(device_id) / 1024**3
+                cached = torch.cuda.memory_reserved(device_id) / 1024**3
+                total = torch.cuda.get_device_properties(device_id).total_memory / 1024**3
+                
+                stats[f'gpu_{device_id}'] = {
+                    'allocated': allocated,
+                    'cached': cached,
+                    'total': total
+                }
+        except Exception as e:
+            logger.error(f"Error getting memory status: {str(e)}")
+        return stats
+
+    def get_power_metrics(self) -> PowerMetrics:
+        """Retrieve current power metrics for GPUs."""
+        try:
+            gpus = GPUtil.getGPUs()
+            gpu_power_draw = sum(gpu.powerDraw for gpu in gpus)
+            gpu_temp = max(gpu.temperature for gpu in gpus)
+            cpu_usage = psutil.cpu_percent()
+            memory_usage = psutil.virtual_memory().percent
+            
+            return PowerMetrics(
+                gpu_power_draw=gpu_power_draw,
+                gpu_temp=gpu_temp,
+                cpu_usage=cpu_usage,
+                memory_usage=memory_usage
+            )
+        except Exception as e:
+            logger.error(f"Error getting power metrics: {str(e)}")
+            return PowerMetrics(0, 0, 0, 0)
+
+    def monitor(self):
+        """Monitor GPU and system metrics."""
+        while self.monitoring_active:
+            metrics = self.get_power_metrics()
+            self.metrics_history.append(metrics)
+            time.sleep(1)  # Adjust the sleep time as needed
+
+    def stop_monitoring(self):
+        """Stop the GPU monitoring thread."""
+        self.monitoring_active = False
+        self.monitor_future.result()  # Wait for the monitoring thread to finish
+        self.executor.shutdown()
+
+# Example usage
+if __name__ == "__main__":
+    device_ids = [0, 1]  # Example device IDs
+    optimizer = GPUOptimizer(device_ids)
+    time.sleep(10)  # Let the monitoring run for a while
+    optimizer.stop_monitoring()
+    print(optimizer.metrics_history)
+def __init__(self, device_ids, interval=1):
+    self.device_ids = device_ids
+    self.monitoring_active = True
+    self.metrics_history = []
+    self.interval = interval
+    self.executor = ThreadPoolExecutor(max_workers=1)
+    self.monitor_future = self.executor.submit(self.monitor)
+
+def monitor(self):
+    """Monitor GPU and system metrics."""
+    while self.monitoring_active:
+        metrics = self.get_power_metrics()
+        self.metrics_history.append(metrics)
+        time.sleep(self.interval)  # Use the dynamic interval
